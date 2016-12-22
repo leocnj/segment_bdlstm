@@ -5,3 +5,5 @@ trans_corrected.tar.gz
 
 corrected/*.txt
 
+*.pyc
+
