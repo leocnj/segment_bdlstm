@@ -9,4 +9,5 @@ KERAS_BACKEND=theano python app/train_pair.py \
  --batch_size=64 \
  --max_sequence_len=40 \
  --lstm_hs=32 \
+ --num_epochs=30 \
  --model_name=$1

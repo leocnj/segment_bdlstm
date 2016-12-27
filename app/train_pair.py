@@ -55,8 +55,7 @@ def train_pair(args, train_csv, test_csv):
               batch_size=args.batch_size,
               callbacks=callbacks_list)
 
-    pred = earlystop.model.predict([x_test[0], x_test[1]],
-                                   batch_size=args.batch_size)
+    pred = earlystop.model.predict(x_test, batch_size=args.batch_size)
     qwk = qw_kappa(y_test, pred)
     print('prediciton.{}'.format(pred))
     print('Test QW Kappa: {}.'.format(qwk))
