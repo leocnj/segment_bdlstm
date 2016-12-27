@@ -64,7 +64,7 @@ def _segment_bdlstm_model(args, embedding_matrix):
         lstm_outs.append(out)
 
     merged = merge(lstm_outs, mode='concat')
-    result = Dense(1, init='normal', activation='relu')(merged)
+    result = Dense(1, init='normal')(merged) # regression won't use any non-linear activation.
 
     model = Model(input=ins, output=result)
     model.compile(optimizer=optimizer,
