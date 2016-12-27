@@ -40,7 +40,7 @@ def read_input_csv(train_csv, test_csv, nb_words, maxlen):
 
     train_X = []
     test_X = []
-    for ci in range(1,10):
+    for ci in range(1,11):
         ta_X = train_df.ix[:, ci].values.tolist()
         ts_X = test_df.ix[:, ci].values.tolist()
 

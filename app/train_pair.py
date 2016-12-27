@@ -49,7 +49,7 @@ def train_pair(args, train_csv, test_csv):
     earlystop = EarlyStopping(monitor='val_loss', patience=1, verbose=1)
     callbacks_list = [earlystop]
 
-    model.fit([x_train[0], x_train[1]], y_train,
+    model.fit(x_train, y_train,
               validation_split=0.1,
               nb_epoch=args.num_epochs,
               batch_size=args.batch_size,
@@ -58,6 +58,7 @@ def train_pair(args, train_csv, test_csv):
     pred = earlystop.model.predict([x_test[0], x_test[1]],
                                    batch_size=args.batch_size)
     qwk = qw_kappa(y_test, pred)
+    print('prediciton.{}'.format(pred))
     print('Test QW Kappa: {}.'.format(qwk))
 
 
