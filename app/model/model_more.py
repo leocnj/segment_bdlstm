@@ -55,7 +55,7 @@ def _segment_bdlstm_model(args, embedding_matrix):
 
     # A shared BDLSTM across all segments.
     shared_bdlstm = Bidirectional(LSTM(lstm_hs, dropout_W=0.2, dropout_U=0.2))
-    shared_dense = Dense(1, init='normal', activation='tanh')
+    shared_dense = Dense(1, activation='tanh')
 
     lstm_outs = []
     for seg in segs:
