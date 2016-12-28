@@ -9,6 +9,7 @@ from reader.csvreader import read_input_csv
 
 from utils import argumentparser
 import  ml_metrics.quadratic_weighted_kappa as qw_kappa
+import scipy.stats.pearsonr as corr
 
 np.random.seed(42)
 
@@ -56,9 +57,9 @@ def train_pair(args, train_csv, test_csv):
               callbacks=callbacks_list)
 
     pred = earlystop.model.predict(x_test, batch_size=args.batch_size)
-    qwk = qw_kappa(y_test, pred)
+    qwk = corr(y_test, pred)
     print('prediciton.{}'.format(pred))
-    print('Test QW Kappa: {}.'.format(qwk))
+    print('Test Pearson corr: {}.'.format(qwk))
 
 
 if __name__ == '__main__':
