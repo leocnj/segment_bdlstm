@@ -131,7 +131,7 @@ def _segment_cnn_model(args, embedding_matrix):
         embd = Embedding(input_dim=vocab_size+1,
                       output_dim=word_dim,
                       input_length=story_maxlen,
-                      mask_zero=True,
+                      mask_zero=False,
                       weights=[embed_weights],
                       trainable=embeddings_trainable)(input)
         ins.append(input)
