@@ -10,7 +10,7 @@ import sys, os
 def model_selector(args, embedding_matrix):
     '''Method to select the model to be used for classification'''
     if (args.exp_name.lower() == 'cnn'):
-        return _kim_cnn_model(args, embedding_matrix)
+        return _segment_cnn_model(args, embedding_matrix)
     elif (args.exp_name.lower() == 'lstm'):
         return _segment_bdlstm_model(args, embedding_matrix)
     else:
@@ -101,6 +101,67 @@ def _param_selector_lstm(args):
         embeddings_trainable = False
     return (lstm_hs, dropout_list, optimizer, use_embeddings, embeddings_trainable)
 
+
+
+def _segment_cnn_model(args, embedding_matrix):
+    """
+    :param args:
+    :param embedding_matrix:
+    :return:
+    """
+    (filtersize_list, number_of_filters_per_filtersize,
+     dropout_list, optimizer, use_embeddings, embeddings_trainable) \
+        = _param_selector(args)
+    print('Defining segment CNN model using neural-reader style.')
+
+    # call neural-reader's implementations
+    ########## PARAM #############
+    vocab_size = args.nb_words
+    word_dim = args.embedding_dim
+    story_maxlen = args.max_sequence_len
+    embed_weights = embedding_matrix
+
+    ########## MODEL ############
+    segs = range(0, 10)
+    ins = []
+    embds = []
+    for seg in segs:
+        name = 'seg_' + str(seg)
+        input = Input(shape=(story_maxlen,), dtype='int32', name=name)
+        embd = Embedding(input_dim=vocab_size+1,
+                      output_dim=word_dim,
+                      input_length=story_maxlen,
+                      mask_zero=True,
+                      weights=[embed_weights],
+                      trainable=embeddings_trainable)(input)
+        ins.append(input)
+        embds.append(embd)
+
+    # A shared BDLSTM across all segments.
+    nb_filter = number_of_filters_per_filtersize[0]
+    filtersize = filtersize_list[0]
+    pool_length = args.max_sequence_len - filtersize + 1
+
+    shared_cnn = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')
+    shared_dense = Dense(1, activation='relu')
+
+    lstm_outs = []
+    for seg in segs:
+        x = shared_cnn(embds[seg])
+        x = MaxPooling1D(pool_length=pool_length)(x)
+        x = Flatten()(x)
+        out = shared_dense(x)
+        lstm_outs.append(out)
+
+    merged = merge(lstm_outs, mode='concat')
+    result = Dense(1, init='normal')(merged) # regression won't use any non-linear activation.
+
+    model = Model(input=ins, output=result)
+    model.compile(optimizer=optimizer,
+                  loss='mean_squared_error')
+
+    print(model.summary())
+    return model
 
 def _kim_cnn_model(args, embedding_matrix):
     '''
@@ -214,6 +275,3 @@ def _param_for_tweak(args):
         pass
     return (filtersize_list, number_of_filters_per_filtersize,
             dropout_list, optimizer, use_embeddings, embeddings_trainable)
-
-
-
