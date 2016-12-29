@@ -28,7 +28,7 @@ def read_input_csv(train_csv, test_csv, nb_words, maxlen):
 
     # obtain Tokenizer
     texts = []
-    for ci in range(1, 10):
+    for ci in range(1, 11):
         texts = texts + train_df.ix[:, ci].values.tolist()
         texts = texts + test_df.ix[:, ci].values.tolist()
 
@@ -62,6 +62,20 @@ def read_input_csv(train_csv, test_csv, nb_words, maxlen):
 
     return train_X, train_y, test_X, test_y, word_index
 
+def _reshape_input(X, y):
+    '''
+
+    :param X:
+    :param y:
+    :return:
+    '''
+    # http://bit.ly/2hQDozW
+    # X_long = np.concatenate([arr[None, ...] for arr in X], axis=0)
+    X_long = np.concatenate([arr for arr in X], axis=0)
+    y_long = np.concatenate([y for arr in X], axis=0)
+
+    return X_long, y_long
+
 
 def test_data():
     """
@@ -72,7 +86,10 @@ def test_data():
     ta_csv = dir + "param_train.csv"
     ts_csv = dir + "param_dev.csv"
     tps = read_input_csv(ta_csv, ts_csv, nb_words=20000, maxlen=30)
-    print(tps[1])
+    ta_new, ta_y = _reshape_input(tps[0], tps[1])
+    print(ta_new.shape())
+    print(ta_y.shape())
+
 
 if __name__ == '__main__':
     test_data()

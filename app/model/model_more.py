@@ -11,6 +11,8 @@ def model_selector(args, embedding_matrix):
     '''Method to select the model to be used for classification'''
     if (args.exp_name.lower() == 'cnn'):
         return _segment_cnn_model(args, embedding_matrix)
+    elif(args.exp_name.lower() == 'uttlabel_cnn'):
+        return _uttlabel_cnn_model(args, embedding_matrix)
     elif (args.exp_name.lower() == 'lstm'):
         return _segment_bdlstm_model(args, embedding_matrix)
     else:
@@ -162,6 +164,53 @@ def _segment_cnn_model(args, embedding_matrix):
 
     print(model.summary())
     return model
+
+
+
+def _uttlabel_cnn_model(args, embedding_matrix):
+    """
+    Use utterance level label to be segment level label.
+    """
+    (filtersize_list, number_of_filters_per_filtersize,
+     dropout_list, optimizer, use_embeddings, embeddings_trainable) \
+        = _param_selector(args)
+    print('Defining uttlabel CNN model')
+
+    # call neural-reader's implementations
+    ########## PARAM #############
+    vocab_size = args.nb_words
+    word_dim = args.embedding_dim
+    story_maxlen = args.max_sequence_len
+    embed_weights = embedding_matrix
+
+    ########## MODEL ############
+    input = Input(shape=(story_maxlen,), dtype='int32', name='input')
+    embd = Embedding(input_dim=vocab_size+1,
+                  output_dim=word_dim,
+                  input_length=story_maxlen,
+                  mask_zero=False,
+                  weights=[embed_weights],
+                  trainable=embeddings_trainable)(input)
+
+    nb_filter = number_of_filters_per_filtersize[0]
+    filtersize = filtersize_list[0]
+    pool_length = args.max_sequence_len - filtersize + 1
+
+    shared_cnn = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')
+    shared_dense = Dense(1, init='normal')
+
+    x = shared_cnn(embd)
+    x = MaxPooling1D(pool_length=pool_length)(x)
+    x = Flatten()(x)
+    result = shared_dense(x)
+
+    model = Model(input=input, output=result)
+    model.compile(optimizer=optimizer,
+                  loss='mean_squared_error')
+
+    print(model.summary())
+    return model
+
 
 def _kim_cnn_model(args, embedding_matrix):
     '''
