@@ -9,6 +9,7 @@ from reader.csvreader import read_input_csv
 
 from utils import argumentparser
 from scipy.stats import pearsonr
+import pandas as pd
 
 np.random.seed(42)
 
@@ -60,6 +61,7 @@ def train_pair(args, train_csv, test_csv):
     # out to result csv
     df = pd.DataFrame({'pred': pred, 'actual': y_test})
     df.to_csv('result.csv')
+
     corr_r = pearsonr(y_test, pred)
     print('prediciton.{}'.format(pred))
     print('Test Pearson corr: {}.'.format(corr_r))

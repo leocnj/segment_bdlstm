@@ -63,9 +63,13 @@ def train_pair(args, train_csv, test_csv):
     x_test_onecol, y_test_onecol = _reshape_input(x_test, y_test)
     pred = earlystop.model.predict(x_test_onecol, batch_size=args.batch_size)
 
+    print('y_test_col shape {}'.format(y_test_onecol.shape()))
+    print('prediction shape {}'.format(pred.shape()))
+
     # out to result csv
     df = pd.DataFrame({'pred': pred, 'actual': y_test_onecol})
     df.to_csv('result_uttlabel.csv')
+
     corr_r = pearsonr(y_test_onecol, pred)
     print('prediciton.{}'.format(pred))
     print('Test Pearson corr: {}.'.format(corr_r))
