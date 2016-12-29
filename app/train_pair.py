@@ -57,6 +57,7 @@ def train_pair(args, train_csv, test_csv):
               callbacks=callbacks_list)
 
     pred = earlystop.model.predict(x_test, batch_size=args.batch_size)
+    pred = pred.flatten() # to 1D array
 
     # out to result csv
     df = pd.DataFrame({'pred': pred, 'actual': y_test})
