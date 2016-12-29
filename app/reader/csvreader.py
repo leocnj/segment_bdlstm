@@ -28,7 +28,8 @@ def read_input_csv(train_csv, test_csv, nb_words, maxlen):
 
     # obtain Tokenizer
     texts = []
-    for ci in range(1, 11):
+    # TODO figure out why need 10 so that CNN shows good result.
+    for ci in range(1, 10):
         texts = texts + train_df.ix[:, ci].values.tolist()
         texts = texts + test_df.ix[:, ci].values.tolist()
 

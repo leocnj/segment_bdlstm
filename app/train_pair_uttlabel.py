@@ -64,14 +64,15 @@ def train_pair(args, train_csv, test_csv):
     pred = earlystop.model.predict(x_test_onecol, batch_size=args.batch_size)
     pred = pred.flatten() # to 1-D arrary
 
-    print('y_test_col shape {}'.format(y_test_onecol.shape))
-    print('prediction shape {}'.format(pred.shape))
+    # mean every 10 rows
+    # http://bit.ly/2hRcM1r
+    pred = np.mean(pred.reshape(-1, 10), axis=1)
 
     # out to result csv
-    df = pd.DataFrame({'pred': pred, 'actual': y_test_onecol})
+    df = pd.DataFrame({'pred': pred, 'actual': y_test})
     df.to_csv('result_uttlabel.csv')
 
-    corr_r = pearsonr(y_test_onecol, pred)
+    corr_r = pearsonr(y_test, pred)
     print('prediciton.{}'.format(pred))
     print('Test Pearson corr: {}.'.format(corr_r))
 

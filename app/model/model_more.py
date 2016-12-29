@@ -11,7 +11,7 @@ def model_selector(args, embedding_matrix):
     '''Method to select the model to be used for classification'''
     if (args.exp_name.lower() == 'cnn'):
         return _segment_cnn_model(args, embedding_matrix)
-    elif(args.exp_name.lower() == 'uttlabel_cnn'):
+    elif (args.exp_name.lower() == 'uttlabel_cnn'):
         return _uttlabel_cnn_model(args, embedding_matrix)
     elif (args.exp_name.lower() == 'lstm'):
         return _segment_bdlstm_model(args, embedding_matrix)
