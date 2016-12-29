@@ -62,6 +62,7 @@ def train_pair(args, train_csv, test_csv):
     # During testing, iterate each x_test column
     x_test_onecol, y_test_onecol = _reshape_input(x_test, y_test)
     pred = earlystop.model.predict(x_test_onecol, batch_size=args.batch_size)
+    pred = pred.flatten() # to 1-D arrary
 
     print('y_test_col shape {}'.format(y_test_onecol.shape))
     print('prediction shape {}'.format(pred.shape))
