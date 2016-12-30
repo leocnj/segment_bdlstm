@@ -78,6 +78,10 @@ def _reshape_input(X, y):
     return X_long, y_long
 
 
+def _reshape_pred(X):
+    return np.mean(X.reshape(-1, len(X)/10), axis=0)
+
+
 def test_data():
     """
     test code
@@ -88,8 +92,11 @@ def test_data():
     ts_csv = dir + "param_dev.csv"
     tps = read_input_csv(ta_csv, ts_csv, nb_words=20000, maxlen=30)
     ta_new, ta_y = _reshape_input(tps[0], tps[1])
-    print(ta_new.shape())
-    print(ta_y.shape())
+    y_back = _reshape_pred(ta_y)
+    print(ta_new.shape)
+    print(ta_y.shape)
+    print(y_back.shape)
+
 
 
 if __name__ == '__main__':

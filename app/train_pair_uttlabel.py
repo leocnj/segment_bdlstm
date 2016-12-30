@@ -5,7 +5,7 @@ from keras.callbacks import EarlyStopping
 
 from model.model_more import model_selector
 from reader.filereader import read_glove_vectors
-from reader.csvreader import read_input_csv, _reshape_input
+from reader.csvreader import read_input_csv, _reshape_input, _reshape_pred
 
 from utils import argumentparser
 from scipy.stats import pearsonr
@@ -66,7 +66,7 @@ def train_pair(args, train_csv, test_csv):
 
     # mean every 10 rows
     # http://bit.ly/2hRcM1r
-    pred = np.mean(pred.reshape(-1, 10), axis=1)
+    pred = _reshape_pred(pred)
 
     # out to result csv
     df = pd.DataFrame({'pred': pred, 'actual': y_test})
