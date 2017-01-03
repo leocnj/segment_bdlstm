@@ -136,10 +136,11 @@ def _segment_cnn_model(args, embedding_matrix):
                       mask_zero=False,
                       weights=[embed_weights],
                       trainable=embeddings_trainable)(input)
+        embd = Dropout(dropout_list[0])(embd)
         ins.append(input)
         embds.append(embd)
 
-    # A shared BDLSTM across all segments.
+    # A shared CNN across all segments.
     nb_filter = number_of_filters_per_filtersize[0]
     filtersize = filtersize_list[0]
     pool_length = args.max_sequence_len - filtersize + 1
@@ -155,8 +156,9 @@ def _segment_cnn_model(args, embedding_matrix):
         out = shared_dense(x)
         lstm_outs.append(out)
 
-    merged = merge(lstm_outs, mode='concat')
-    result = Dense(8, activation='relu')(merged) # regression won't use any non-linear activation.
+    x = merge(lstm_outs, mode='concat')
+    x = Dropout(dropout_list[1])(x)
+    result = Dense(8, activation='softmax')(x) # regression won't use any non-linear activation.
 
     model = Model(input=ins, output=result)
 #    model.compile(optimizer=optimizer,
@@ -193,17 +195,19 @@ def _uttlabel_cnn_model(args, embedding_matrix):
                   mask_zero=False,
                   weights=[embed_weights],
                   trainable=embeddings_trainable)(input)
+    embd = Dropout(dropout_list[0])(embd)
 
     nb_filter = number_of_filters_per_filtersize[0]
     filtersize = filtersize_list[0]
     pool_length = args.max_sequence_len - filtersize + 1
 
     shared_cnn = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')
-    shared_dense = Dense(8, activation='relu')
+    shared_dense = Dense(8, activation='softmax')
 
     x = shared_cnn(embd)
     x = MaxPooling1D(pool_length=pool_length)(x)
     x = Flatten()(x)
+    x = Dropout(dropout_list[1])(x)
     result = shared_dense(x)
 
     model = Model(input=input, output=result)
