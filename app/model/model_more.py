@@ -156,9 +156,9 @@ def _segment_cnn_model(args, embedding_matrix):
         lstm_outs.append(out)
 
     merged = merge(lstm_outs, mode='concat')
-    result = Dense(1, init='normal')(merged) # regression won't use any non-linear activation.
+    result = Dense(8, activation='relu')(merged) # regression won't use any non-linear activation.
 
-#    model = Model(input=ins, output=result)
+    model = Model(input=ins, output=result)
 #    model.compile(optimizer=optimizer,
 #                  loss='mean_squared_error')
     model.compile(optimizer=optimizer,
@@ -199,7 +199,7 @@ def _uttlabel_cnn_model(args, embedding_matrix):
     pool_length = args.max_sequence_len - filtersize + 1
 
     shared_cnn = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')
-    shared_dense = Dense(1, init='normal')
+    shared_dense = Dense(8, activation='relu')
 
     x = shared_cnn(embd)
     x = MaxPooling1D(pool_length=pool_length)(x)

@@ -59,7 +59,7 @@ def read_input_csv(train_csv, test_csv, nb_words, maxlen):
     # 1/3/2017 running as a classification task.
     train_y = train_df.label.values
     test_y = test_df.label.values
-    nb_classes = len(np.unique(train_y)) # MAKE SURE train contains all possible labels
+    nb_classes = len(np.unique(train_y)) + 1# MAKE SURE train contains all possible labels
     train_y = np_utils.to_categorical(train_y, nb_classes)
     test_y = np_utils.to_categorical(test_y, nb_classes)
 
