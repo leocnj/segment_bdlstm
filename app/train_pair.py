@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import numpy as np
 from keras.callbacks import EarlyStopping
-
+from keras.utils.np_utils import probas_to_classes, accuracy
 from model.model_more import model_selector
 from reader.filereader import read_glove_vectors
 from reader.csvreader import read_input_csv
@@ -57,12 +57,15 @@ def train_pair(args, train_csv, test_csv):
               callbacks=callbacks_list)
 
     pred = earlystop.model.predict(x_test, batch_size=args.batch_size)
-    pred = pred.flatten() # to 1D array
+    pred = probas_to_classes(pred)
+    act = probas_to_classes(y_test)
 
+    # pred = pred.flatten() # to 1D array
     # out to result csv
-    df = pd.DataFrame({'pred': pred, 'actual': y_test})
+    df = pd.DataFrame({'pred': pred, 'actual': act})
     df.to_csv('result.csv')
 
+    print('accuracy.{}'.format(accuracy(pred, act)))
     corr_r = pearsonr(y_test, pred)
     print('prediciton.{}'.format(pred))
     print('Test Pearson corr: {}.'.format(corr_r))

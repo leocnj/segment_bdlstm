@@ -3,6 +3,7 @@ from __future__ import print_function
 import numpy as np
 from keras.callbacks import EarlyStopping
 
+from keras.utils.np_utils import probas_to_classes, accuracy
 from model.model_more import model_selector
 from reader.filereader import read_glove_vectors
 from reader.csvreader import read_input_csv, _reshape_input, _reshape_pred
