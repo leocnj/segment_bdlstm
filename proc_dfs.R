@@ -27,16 +27,22 @@ out.sorted <- out[order(out$sum),]
 # 60-70  17    2  subj=13,31
 
 df_sc <- merge(df, score[, c('videoID', 'subj', 'BARS')], by.x='vid', by.y='videoID')
+# 1/3/2017
+# added one more col to hold categorical BARS score.
+df_sc <- df_sc[complete.cases(df_sc),] # remove N/A
+df_sc <- df_sc %>%
+  mutate(label=factor(round(BARS)))
 
 # based on the above subj-split plan, divide data
 subj <- unique(score$subj)
 dev <- c('24', '18', '10', '17', '13', '31')
 train <- setdiff(subj, dev)
 
-df.dev<-subset(df_sc, subj %in% dev, select = vid:BARS)
-df.train<-subset(df_sc, subj %in% train, select = vid:BARS)
+df.dev<-subset(df_sc, subj %in% dev, select = vid:label)
+df.train<-subset(df_sc, subj %in% train, select = vid:label)
 
 # now we can save both new dfs for param tweaking
 # later, from df.train will generate 10-fold CV from train (n=30)
+
 write.csv(df.dev, file='csv/param_dev.csv', row.names = F)
 write.csv(df.train, file='csv/param_train.csv', row.names = F)
