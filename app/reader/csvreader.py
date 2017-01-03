@@ -46,7 +46,6 @@ def read_input_csv(train_csv, test_csv, nb_words, maxlen):
         ts_X = test_df.ix[:, ci].values.tolist()
 
         n_ta = len(ta_X)
-        n_ts = len(ts_X)
         print('col: {}'.format(ci))
         textseq = token.texts_to_sequences(ta_X + ts_X)
         lens = [len(line) for line in textseq]
@@ -57,10 +56,16 @@ def read_input_csv(train_csv, test_csv, nb_words, maxlen):
         train_X.append(ta_X)
         test_X.append(ts_X)
 
-    train_y = train_df.BARS.values
-    test_y = test_df.BARS.values
-    # for regression task, directly using float number
+    # 1/3/2017 running as a classification task.
+    train_y = train_df.label.values
+    test_y = test_df.label.values
+    nb_classes = len(np.unique(train_y)) # MAKE SURE train contains all possible labels
+    train_y = np_utils.to_categorical(train_y, nb_classes)
+    test_y = np_utils.to_categorical(test_y, nb_classes)
 
+    # train_y = train_df.BARS.values
+    # test_y = test_df.BARS.values
+    # for regression task, directly using float number
     return train_X, train_y, test_X, test_y, word_index
 
 def _reshape_input(X, y):
@@ -96,7 +101,6 @@ def test_data():
     print(ta_new.shape)
     print(ta_y.shape)
     print(y_back.shape)
-
 
 
 if __name__ == '__main__':

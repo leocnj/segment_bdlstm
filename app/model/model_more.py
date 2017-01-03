@@ -158,10 +158,12 @@ def _segment_cnn_model(args, embedding_matrix):
     merged = merge(lstm_outs, mode='concat')
     result = Dense(1, init='normal')(merged) # regression won't use any non-linear activation.
 
-    model = Model(input=ins, output=result)
+#    model = Model(input=ins, output=result)
+#    model.compile(optimizer=optimizer,
+#                  loss='mean_squared_error')
     model.compile(optimizer=optimizer,
-                  loss='mean_squared_error')
-
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
     print(model.summary())
     return model
 
@@ -205,9 +207,11 @@ def _uttlabel_cnn_model(args, embedding_matrix):
     result = shared_dense(x)
 
     model = Model(input=input, output=result)
+#   model.compile(optimizer=optimizer,
+#                 loss='mean_squared_error')
     model.compile(optimizer=optimizer,
-                  loss='mean_squared_error')
-
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
     print(model.summary())
     return model
 
