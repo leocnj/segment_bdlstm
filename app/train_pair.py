@@ -66,7 +66,7 @@ def train_pair(args, train_csv, test_csv):
     df.to_csv('result.csv')
 
     print('accuracy.{}'.format(accuracy(pred, act)))
-    corr_r = pearsonr(y_test, pred)
+    corr_r = pearsonr(act, pred)
     print('prediciton.{}'.format(pred))
     print('Test Pearson corr: {}.'.format(corr_r))
 

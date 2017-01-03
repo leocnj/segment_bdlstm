@@ -63,17 +63,20 @@ def train_pair(args, train_csv, test_csv):
     # During testing, iterate each x_test column
     x_test_onecol, y_test_onecol = _reshape_input(x_test, y_test)
     pred = earlystop.model.predict(x_test_onecol, batch_size=args.batch_size)
-    pred = pred.flatten() # to 1-D arrary
+    # pred = pred.flatten() # to 1-D arrary
+    pred = probas_to_classes(pred)
+    act = probas_to_classes(y_test)
 
     # mean every 10 rows
     # http://bit.ly/2hRcM1r
     pred = _reshape_pred(pred)
 
     # out to result csv
-    df = pd.DataFrame({'pred': pred, 'actual': y_test})
+    df = pd.DataFrame({'pred': pred, 'actual': act})
     df.to_csv('result_uttlabel.csv')
 
-    corr_r = pearsonr(y_test, pred)
+    print('accuracy.{}'.format(accuracy(pred, act)))
+    corr_r = pearsonr(act, pred)
     print('prediciton.{}'.format(pred))
     print('Test Pearson corr: {}.'.format(corr_r))
 
