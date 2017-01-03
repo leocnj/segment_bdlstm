@@ -69,7 +69,7 @@ def train_pair(args, train_csv, test_csv):
 
     # mean every 10 rows
     # http://bit.ly/2hRcM1r
-    pred = _reshape_pred(pred)
+    pred = np.round(_reshape_pred(pred))
 
     # out to result csv
     df = pd.DataFrame({'pred': pred, 'actual': act})
