@@ -153,8 +153,8 @@ def _segment_cnn_model(args, embedding_matrix):
         x = shared_cnn(embds[seg])
         x = MaxPooling1D(pool_length=pool_length)(x)
         x = Flatten()(x)
-        out = shared_dense(x)
-        lstm_outs.append(out)
+        # x = shared_dense(x)
+        lstm_outs.append(x)
 
     x = merge(lstm_outs, mode='concat')
     x = Dropout(dropout_list[1])(x)
