@@ -126,37 +126,39 @@ def _segment_cnn_model(args, embedding_matrix):
     ########## MODEL ############
     segs = range(0, 10)
     ins = []
-    embds = []
     for seg in segs:
         name = 'seg_' + str(seg)
         input = Input(shape=(story_maxlen,), dtype='int32', name=name)
-        embd = Embedding(input_dim=vocab_size+1,
-                      output_dim=word_dim,
-                      input_length=story_maxlen,
-                      mask_zero=False,
-                      weights=[embed_weights],
-                      trainable=embeddings_trainable)(input)
         ins.append(input)
-        embds.append(embd)
 
-    # A shared BDLSTM across all segments.
+    # A shared model (sm) across all segments.
     nb_filter = number_of_filters_per_filtersize[0]
     filtersize = filtersize_list[0]
     pool_length = args.max_sequence_len - filtersize + 1
 
-    shared_cnn = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')
-    shared_dense = Dense(1, activation='relu')
+    in_x = Input(shape=(story_maxlen,), dtype='int32')
+    x = Embedding(input_dim=vocab_size+1,
+                  output_dim=word_dim,
+                  input_length=story_maxlen,
+                  mask_zero=False,
+                  weights=[embed_weights],
+                  trainable=embeddings_trainable)(in_x)
+    x = Dropout(dropout_list[0])(x)
+    x = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')(x)
+    x = MaxPooling1D(pool_length=pool_length)(x)
+    x = Flatten(x)
+    x = Dense(1, activation='relu')(x)
+    out_x = Dropout(dropout_list[1])(x)
 
-    lstm_outs = []
+    shared_cnn = Model(in_x, out_x)
+
+    sm_outs = []
     for seg in segs:
-        x = shared_cnn(embds[seg])
-        x = MaxPooling1D(pool_length=pool_length)(x)
-        x = Flatten()(x)
-        out = shared_dense(x)
-        lstm_outs.append(out)
+        out = shared_cnn(ins[seg])
+        sm_outs.append(out)
 
-    merged = merge(lstm_outs, mode='concat')
-    result = Dense(1, init='normal')(merged) # regression won't use any non-linear activation.
+    x = merge(sm_outs, mode='concat')
+    result = Dense(1, init='normal')(x) # regression won't use any non-linear activation.
 
     model = Model(input=ins, output=result)
     model.compile(optimizer=optimizer,
@@ -164,7 +166,6 @@ def _segment_cnn_model(args, embedding_matrix):
 
     print(model.summary())
     return model
-
 
 
 def _uttlabel_cnn_model(args, embedding_matrix):
