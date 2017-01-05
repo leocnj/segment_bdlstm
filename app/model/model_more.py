@@ -146,15 +146,15 @@ def _segment_cnn_model(args, embedding_matrix):
     x = Dropout(dropout_list[0])(x)
     x = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')(x)
     x = MaxPooling1D(pool_length=pool_length)(x)
-    x = Flatten(x)
+    x = Flatten()(x)
     x = Dense(1, activation='relu')(x)
     out_x = Dropout(dropout_list[1])(x)
 
     shared_cnn = Model(in_x, out_x)
 
     sm_outs = []
-    for seg in segs:
-        out = shared_cnn(ins[seg])
+    for seg in ins:
+        out = shared_cnn(seg)
         sm_outs.append(out)
 
     x = merge(sm_outs, mode='concat')
