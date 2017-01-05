@@ -27,6 +27,7 @@ out.sorted <- out[order(out$sum),]
 # 60-70  17    2  subj=13,31
 
 df_sc <- merge(df, score[, c('videoID', 'subj', 'BARS')], by.x='vid', by.y='videoID')
+df_sc <- df_sc[complete.cases(df_sc),] # remove NA row.
 
 # based on the above subj-split plan, divide data
 subj <- unique(score$subj)
