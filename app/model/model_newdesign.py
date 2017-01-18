@@ -85,7 +85,7 @@ def _segment_cnn_model(params, args, embedding_matrix):
     :param embedding_matrix:
     :return:
     """
-    filtersize = params['filtersize']
+    filtersize = params['filter_size']
     #filtersize_list = [filtersize-1, filtersize, filtersize+1]
     nb_filter = params['nb_filter']
     dropout_list = [params['dropout1'], params['dropout2']]
