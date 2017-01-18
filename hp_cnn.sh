@@ -6,4 +6,4 @@ KERAS_BACKEND=theano python app/tweak_params.py \
  --nb_words=5300 \
  --batch_size=16 \
  --max_sequence_len=40 \
- --nb_epochs=30
+ --num_epochs=30
