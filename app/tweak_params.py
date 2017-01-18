@@ -86,7 +86,7 @@ def model_segment_cnn(params):
 
     corr_r = pearsonr(y_test, pred)
     print('Test Pearson corr: {}.'.format(corr_r))
-    return {'loss': -1.0 * float(corr_r), 'status': STATUS_OK, 'model': model}
+    return {'loss': -1.0 * float(corr_r[0]), 'status': STATUS_OK, 'model': model}
 
 
 if __name__ == '__main__':
