@@ -67,7 +67,7 @@ def model_segment_cnn(params):
     global args
     global embedding_matrix
 
-    nb_epoch = args.nb_epochs
+    nb_epoch = args.num_epochs
     batch_size = params['batch_size']
 
     model = _segment_cnn_model(params, args, embedding_matrix)
