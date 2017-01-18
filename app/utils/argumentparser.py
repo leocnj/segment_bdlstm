@@ -5,8 +5,6 @@ import argparse
 
 def ArgumentParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=str, default='pun',
-                        help='dataset to run NN text classifier')
     parser.add_argument('--exp_name', type=str, default='cnn',
                         help='experiment name (based on used model)')
     parser.add_argument('--data_dir', type=str, default='data',

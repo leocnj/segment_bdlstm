@@ -3,7 +3,7 @@ from __future__ import print_function
 import numpy as np
 from keras.callbacks import EarlyStopping
 
-from model.model_newdesign import _segment_cnn_model
+from model.model_newdesign import model_selector
 from reader.filereader import read_glove_vectors
 from reader.csvreader import read_input_csv
 
@@ -57,7 +57,7 @@ def trials2csv(trials, csvfile):
         dict_writer.writerows(new)
 
 
-def model_segment_cnn(params):
+def model_to_tweak(params):
     '''
 
     :param params:
@@ -70,7 +70,7 @@ def model_segment_cnn(params):
     nb_epoch = args.num_epochs
     batch_size = params['batch_size']
 
-    model = _segment_cnn_model(params, args, embedding_matrix)
+    model = model_selector(params, args, embedding_matrix)
 
     earlystop = EarlyStopping(monitor='val_loss', patience=1, verbose=1)
     callbacks_list = [earlystop]
@@ -94,14 +94,26 @@ if __name__ == '__main__':
     print('Processing input data')
     x_train, y_train, x_test, y_test, embedding_matrix = prep_data(args)
 
-    space = {'optimizer': hp.choice('optimizer', ['adadelta', 'rmsprop']),
-             'batch_size': hp.choice('batch_size', [32, 64]),
-             'filter_size': hp.choice('filter_size', [3, 4, 5]),
-             'nb_filter': hp.choice('nb_filter', [75, 100]),
-             'dropout1': hp.uniform('dropout1', 0.25, 0.75),
-             'dropout2': hp.uniform('dropout2', 0.25, 0.75),
-             'embeddings_trainable': False}
+    if args.exp_name.lower() == 'cnn':
+        space = {'optimizer': hp.choice('optimizer', ['adadelta', 'rmsprop']),
+                 'batch_size': hp.choice('batch_size', [32, 64]),
+                 'filter_size': hp.choice('filter_size', [3, 4, 5]),
+                 'nb_filter': hp.choice('nb_filter', [75, 100]),
+                 'dropout1': hp.uniform('dropout1', 0.25, 0.75),
+                 'dropout2': hp.uniform('dropout2', 0.25, 0.75),
+                 'embeddings_trainable': False}
+        trials = Trials()
+        best = fmin(model_to_tweak, space, algo=tpe.suggest, max_evals=100, trials=trials)
+        print(best)
+        trials2csv(trials, 'segment_cnn_hp.csv')
+    elif args.exp_name.lower() == 'lstm':
+        space = {'optimizer': hp.choice('optimizer', ['adadelta', 'rmsprop']),
+                 'batch_size': hp.choice('batch_size', [32, 64]),
+                 'dropout1': hp.uniform('dropout1', 0.25, 0.75),
+                 'dropout2': hp.uniform('dropout2', 0.25, 0.75),
+                 'lstm_hs': hp.choice('lstm_hs', [32, 48, 64]),
+                 'embeddings_trainable': False}
     trials = Trials()
-    best = fmin(model_segment_cnn, space, algo=tpe.suggest, max_evals=100, trials=trials)
+    best = fmin(model_to_tweak, space, algo=tpe.suggest, max_evals=100, trials=trials)
     print(best)
-    trials2csv(trials, 'segment_cnn_hp.csv')
+    trials2csv(trials, 'segment_bdlstm_hp.csv')
