@@ -84,9 +84,10 @@ def model_to_tweak(params):
     pred = earlystop.model.predict(x_test, batch_size=batch_size)
     pred = pred.flatten()  # to 1D array
 
-    corr_r = pearsonr(y_test, pred)
+    # corr_r = pearsonr(y_test, pred)
+    corr_r = np.nan_to_num(pearsonr(y_test, pred)[0])  # force no NAN
     print('Test Pearson corr: {}.'.format(corr_r))
-    return {'loss': max(-1.0*float(corr_r[0]), 0), 'status': STATUS_OK, 'model': model}
+    return {'loss': -1.0*float(corr_r), 'status': STATUS_OK, 'model': model}
 
 
 if __name__ == '__main__':
@@ -114,6 +115,6 @@ if __name__ == '__main__':
                  'lstm_hs': hp.choice('lstm_hs', [32, 48, 64]),
                  'embeddings_trainable': False}
     trials = Trials()
-    best = fmin(model_to_tweak, space, algo=tpe.suggest, max_evals=100, trials=trials)
+    best = fmin(model_to_tweak, space, algo=tpe.suggest, max_evals=args.max_evals, trials=trials)
     print(best)
     trials2csv(trials, 'segment_bdlstm_hp.csv')

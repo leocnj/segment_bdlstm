@@ -38,6 +38,8 @@ def ArgumentParser():
                         help='learning rate')
     parser.add_argument('--decay_rate', type=float, default=0.0,
                         help='decay rate for rmsprop')
+    parser.add_argument('--max_evals', type=int, default=5,
+                        help='hyperopt max num of evals')
 
     # parser.add_argument('--device', type=str, default='/cpu:0',
     #                     help='Computing device to use for training. \
