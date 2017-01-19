@@ -132,13 +132,15 @@ def _segment_cnn_model(params, args, embedding_matrix):
     return model
 
 
-def _uttlabel_cnn_model(args, embedding_matrix):
+def _uttlabel_cnn_model(params, args, embedding_matrix):
     """
     Use utterance level label to be segment level label.
     """
-    (filtersize_list, number_of_filters_per_filtersize,
-     dropout_list, optimizer, use_embeddings, embeddings_trainable) \
-        = _param_selector(args)
+    filtersize = params['filter_size']
+    nb_filter = params['nb_filter']
+    dropout_list = [params['dropout1'], params['dropout2']]
+    optimizer = params['optimizer']
+    embeddings_trainable = params['embeddings_trainable']
     print('Defining uttlabel CNN model')
 
     # call neural-reader's implementations
@@ -148,26 +150,21 @@ def _uttlabel_cnn_model(args, embedding_matrix):
     story_maxlen = args.max_sequence_len
     embed_weights = embedding_matrix
 
+    pool_length = story_maxlen - filtersize + 1
     ########## MODEL ############
     input = Input(shape=(story_maxlen,), dtype='int32', name='input')
-    embd = Embedding(input_dim=vocab_size+1,
+    x = Embedding(input_dim=vocab_size+1,
                   output_dim=word_dim,
                   input_length=story_maxlen,
                   mask_zero=False,
                   weights=[embed_weights],
                   trainable=embeddings_trainable)(input)
-
-    nb_filter = number_of_filters_per_filtersize[0]
-    filtersize = filtersize_list[0]
-    pool_length = args.max_sequence_len - filtersize + 1
-
-    shared_cnn = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')
-    shared_dense = Dense(1, init='normal')
-
-    x = shared_cnn(embd)
+    x = Dropout(dropout_list[0])(x)
+    x = Conv1D(nb_filter=nb_filter, filter_length=filtersize, activation='relu')(x)
     x = MaxPooling1D(pool_length=pool_length)(x)
     x = Flatten()(x)
-    result = shared_dense(x)
+    x = Dropout(dropout_list[1])(x)
+    result = Dense(1, init='normal')(x)
 
     model = Model(input=input, output=result)
     model.compile(optimizer=optimizer,

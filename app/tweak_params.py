@@ -5,7 +5,7 @@ from keras.callbacks import EarlyStopping
 
 from model.model_newdesign import model_selector
 from reader.filereader import read_glove_vectors
-from reader.csvreader import read_input_csv
+from reader.csvreader import read_input_csv, _reshape_input, _reshape_pred
 
 from utils import argumentparser
 from scipy.stats import pearsonr
@@ -58,13 +58,52 @@ def trials2csv(trials, csvfile):
         dict_writer.writerows(new)
 
 
+def model_to_tweak_uttlabel(params):
+    '''
+
+    :param params:
+    :return:
+    '''
+    # global x_train, y_train, x_test, y_test
+    global args
+    global embedding_matrix
+
+    nb_epoch = args.num_epochs
+    batch_size = params['batch_size']
+
+    model = model_selector(params, args, embedding_matrix)
+
+    earlystop = EarlyStopping(monitor='val_loss', patience=1, verbose=1)
+    callbacks_list = [earlystop]
+
+    # for each segment, use uttlabel to train
+
+    x_train_onecol, y_train_onecol = _reshape_input(x_train, y_train)
+    x_test_onecol, y_test_onecol = _reshape_input(x_test, y_test)
+    model.fit(x_train_onecol, y_train_onecol,
+              validation_split=0.1,
+              nb_epoch=nb_epoch,
+              batch_size=batch_size,
+              callbacks=callbacks_list)
+
+    pred = earlystop.model.predict(x_test_onecol, batch_size=batch_size)
+    pred = pred.flatten()  # to 1D array
+    # mean every 10 rows
+    # http://bit.ly/2hRcM1r
+    pred = _reshape_pred(pred)
+
+    corr_r = np.nan_to_num(pearsonr(y_test, pred)[0])  # force no NAN
+    print('Test Pearson corr: {}.'.format(corr_r))
+    return {'loss': -1.0 * float(corr_r), 'status': STATUS_OK, 'model': model}
+
+
 def model_to_tweak(params):
     '''
 
     :param params:
     :return:
     '''
-    #global x_train, y_train, x_test, y_test
+    # global x_train, y_train, x_test, y_test
     global args
     global embedding_matrix
 
@@ -85,10 +124,9 @@ def model_to_tweak(params):
     pred = earlystop.model.predict(x_test, batch_size=batch_size)
     pred = pred.flatten()  # to 1D array
 
-    # corr_r = pearsonr(y_test, pred)
     corr_r = np.nan_to_num(pearsonr(y_test, pred)[0])  # force no NAN
     print('Test Pearson corr: {}.'.format(corr_r))
-    return {'loss': -1.0*float(corr_r), 'status': STATUS_OK, 'model': model}
+    return {'loss': -1.0 * float(corr_r), 'status': STATUS_OK, 'model': model}
 
 
 if __name__ == '__main__':
@@ -108,6 +146,18 @@ if __name__ == '__main__':
         best = fmin(model_to_tweak, space, algo=tpe.suggest, max_evals=args.max_evals, trials=trials)
         print(best)
         trials2csv(trials, 'segment_cnn_hp.csv')
+    elif args.exp_name.lower() == 'uttlabel_cnn':
+        space = {'optimizer': hp.choice('optimizer', ['adadelta']),
+                 'batch_size': hp.choice('batch_size', [64]),
+                 'filter_size': hp.choice('filter_size', [3, 4, 5, 6]),
+                 'nb_filter': hp.choice('nb_filter', [100]),
+                 'dropout1': hp.uniform('dropout1', 0.25, 0.75),
+                 'dropout2': hp.uniform('dropout2', 0.25, 0.75),
+                 'embeddings_trainable': False}
+        trials = Trials()
+        best = fmin(model_to_tweak_uttlabel, space, algo=tpe.suggest, max_evals=args.max_evals, trials=trials)
+        print(best)
+        trials2csv(trials, 'uttlabel_cnn_hp.csv')
     elif args.exp_name.lower() == 'lstm':
         space = {'optimizer': hp.choice('optimizer', ['adadelta', 'rmsprop']),
                  'batch_size': hp.choice('batch_size', [32, 64]),
