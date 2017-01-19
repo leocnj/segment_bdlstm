@@ -11,6 +11,7 @@ from utils import argumentparser
 from scipy.stats import pearsonr
 
 from hyperopt import fmin, hp, Trials, STATUS_OK, tpe
+import csv
 
 np.random.seed(42)
 
