@@ -111,8 +111,7 @@ def train_cv(args, params, pairs):
                                                                       test,
                                                                       args.nb_words,
                                                                       args.max_sequence_len)
-    print('train tensor {}.'.format(x_train.shape))
-
+        print('train tensor {}.'.format(x_train.shape))
         print('Preparing embedding matrix.')
         embedding_matrix = _gen_embd_matrix(args, embeddings_index, word_index)
 
