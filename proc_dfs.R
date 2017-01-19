@@ -39,5 +39,18 @@ df.train<-subset(df_sc, subj %in% train, select = vid:BARS)
 
 # now we can save both new dfs for param tweaking
 # later, from df.train will generate 10-fold CV from train (n=30)
-write.csv(df.dev, file='csv/param_dev.csv', row.names = F)
-write.csv(df.train, file='csv/param_train.csv', row.names = F)
+# write.csv(df.dev, file='csv/param_dev.csv', row.names = F)
+# write.csv(df.train, file='csv/param_train.csv', row.names = F)
+ids = unique(df.train$subj)
+
+fold_id <- function(id, df){
+  ta = subset(df, subj != id)
+  ts = subset(df, subj == id)
+  ta_csv = paste('csv/cv_ta_', id, sep = "")
+  ts_csv = paste('csv/cv_ts_', id, sep = "")
+  write.csv(ta, file=ta_csv, row.names = F)
+  write.csv(ts, file=ts_csv, row.names = F)
+}
+
+lapply(ids, fold_id, df=df.train)
+
