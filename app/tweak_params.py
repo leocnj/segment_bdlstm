@@ -104,7 +104,7 @@ if __name__ == '__main__':
                  'dropout2': hp.uniform('dropout2', 0.25, 0.75),
                  'embeddings_trainable': False}
         trials = Trials()
-        best = fmin(model_to_tweak, space, algo=tpe.suggest, max_evals=100, trials=trials)
+        best = fmin(model_to_tweak, space, algo=tpe.suggest, max_evals=args.max_evals, trials=trials)
         print(best)
         trials2csv(trials, 'segment_cnn_hp.csv')
     elif args.exp_name.lower() == 'lstm':
