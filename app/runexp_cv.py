@@ -107,11 +107,11 @@ def train_cv(args, params, pairs):
     all_act = []
     for (train, test) in pairs:
         print(train + '=>' + test + '...')
-        x_train, y_train, x_test, y_test, word_index, nb_classes = read_input_csv(train,
-                                                                                  test,
-                                                                                  args.nb_words,
-                                                                                  args.max_sequence_len)
-        print('train tensor {}.'.format(x_train.shape))
+        x_train, y_train, x_test, y_test, word_index = read_input_csv(train,
+                                                                      test,
+                                                                      args.nb_words,
+                                                                      args.max_sequence_len)
+    print('train tensor {}.'.format(x_train.shape))
 
         print('Preparing embedding matrix.')
         embedding_matrix = _gen_embd_matrix(args, embeddings_index, word_index)
