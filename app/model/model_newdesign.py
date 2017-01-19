@@ -12,7 +12,7 @@ def model_selector(params, args, embedding_matrix):
     if (args.exp_name.lower() == 'cnn'):
         return _segment_cnn_model(params, args, embedding_matrix)
     elif (args.exp_name.lower() == 'uttlabel_cnn'):
-        return _uttlabel_cnn_model(args, embedding_matrix)
+        return _uttlabel_cnn_model(params, args, embedding_matrix)
     elif (args.exp_name.lower() == 'lstm'):
         return _segment_bdlstm_model(params, args, embedding_matrix)
     else:
