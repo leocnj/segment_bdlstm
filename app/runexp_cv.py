@@ -22,12 +22,17 @@ def one_cv_exp(args, params):
     folds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 32, 33, 35, 36, 37,
              38]
 
+    folds = [1,2]
     trains = [args.data_dir + 'cv_ta_' + str(fold) for fold in folds]
     tests = [args.data_dir + 'cv_ts_' + str(fold) for fold in folds]
     pairs = zip(trains, tests)
 
     all_pred, all_act = train_cv(args, params, pairs)
-    corr_r = np.nan_to_num(pearsonr(all_pred, all_act)[0])  # force no NAN
+    #all_pred = np.asarray(all_pred)
+    #all_act = np.asarray(all_act)
+    print('pred: {}'.format(all_pred))
+    corr_r = pearsonr(all_pred, all_act)  
+
     print('CV Pearson corr: {}.'.format(corr_r))
 
 
@@ -103,8 +108,8 @@ def run_a_model(args, params, embedding_matrix, x_train, y_train, x_test, y_test
 def train_cv(args, params, pairs):
     embeddings_index = read_glove_vectors(args.embedding_file_path)
 
-    all_pred = []
-    all_act = []
+    all_pred = np.zeros(0)
+    all_act = np.zeros(0)
     for (train, test) in pairs:
         print(train + '=>' + test + '...')
         x_train, y_train, x_test, y_test, word_index = read_input_csv(train,
@@ -122,9 +127,8 @@ def train_cv(args, params, pairs):
 
         corr_r = np.nan_to_num(pearsonr(y_pred, y_test)[0])  # force no NAN
         print('Pearson corr: {}.'.format(corr_r))
-        all_pred.append(list(y_pred))
-        all_act.append(list(y_test))
-
+        all_pred = np.concatenate([all_pred, y_pred])
+        all_act = np.concatenate([all_act, y_test])
     return (all_pred, all_act)
 
 
