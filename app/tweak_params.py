@@ -148,18 +148,18 @@ if __name__ == '__main__':
         trials2csv(trials, 'segment_cnn_hp.csv')
     elif args.exp_name.lower() == 'uttlabel_cnn':
         space = {'optimizer': hp.choice('optimizer', ['adadelta']),
-                 'batch_size': hp.choice('batch_size', [64]),
+                 'batch_size': hp.choice('batch_size', [32, 64, 96]),
                  'filter_size': hp.choice('filter_size', [3, 4, 5, 6]),
-                 'nb_filter': hp.choice('nb_filter', [100]),
-                 'dropout1': hp.uniform('dropout1', 0.25, 0.75),
-                 'dropout2': hp.uniform('dropout2', 0.25, 0.75),
+                 'nb_filter': hp.choice('nb_filter', [50, 75, 100]),
+                 'dropout1': hp.uniform('dropout1', 0.5, 0.5),
+                 'dropout2': hp.uniform('dropout2', 0.5, 0.5),
                  'embeddings_trainable': False}
         trials = Trials()
         best = fmin(model_to_tweak_uttlabel, space, algo=tpe.suggest, max_evals=args.max_evals, trials=trials)
         print(best)
         trials2csv(trials, 'uttlabel_cnn_hp.csv')
     elif args.exp_name.lower() == 'lstm':
-        space = {'optimizer': hp.choice('optimizer', ['adadelta', 'rmsprop']),
+        space = {'optimizer': hp.choice('optimizer', ['adadelta']),
                  'batch_size': hp.choice('batch_size', [32, 64]),
                  'dropout1': hp.uniform('dropout1', 0.25, 0.75),
                  'dropout2': hp.uniform('dropout2', 0.25, 0.75),

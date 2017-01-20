@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
-echo 'exp_name' $1
+echo 'exp_name: ' $1
+echo 'gpu: ' $2
+
+# setup GPU to run
+th_flag="THEANO_FLAGS=\"device=gpu"
+th_flag+=$2
+th_flag+="\""
+echo $th_flag
+eval $th_flag
+
 KERAS_BACKEND=theano python app/tweak_params.py \
  --data_dir=csv/ \
  --exp_name=${1} \
