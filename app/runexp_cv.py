@@ -22,17 +22,12 @@ def one_cv_exp(args, params):
     folds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 32, 33, 35, 36, 37,
              38]
 
-    folds = [1,2]
     trains = [args.data_dir + 'cv_ta_' + str(fold) for fold in folds]
     tests = [args.data_dir + 'cv_ts_' + str(fold) for fold in folds]
     pairs = zip(trains, tests)
 
     all_pred, all_act = train_cv(args, params, pairs)
-    #all_pred = np.asarray(all_pred)
-    #all_act = np.asarray(all_act)
-    print('pred: {}'.format(all_pred))
-    corr_r = pearsonr(all_pred, all_act)  
-
+    corr_r = pearsonr(all_pred, all_act)
     print('CV Pearson corr: {}.'.format(corr_r))
 
 
