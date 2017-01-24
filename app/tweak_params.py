@@ -151,8 +151,8 @@ if __name__ == '__main__':
                  'batch_size': hp.choice('batch_size', [32, 64, 96]),
                  'filter_size': hp.choice('filter_size', [3, 4, 5, 6]),
                  'nb_filter': hp.choice('nb_filter', [50, 75, 100]),
-                 'dropout1': hp.uniform('dropout1', 0.5, 0.5),
-                 'dropout2': hp.uniform('dropout2', 0.5, 0.5),
+                 'dropout1': hp.uniform('dropout1', 0.25, 0.75),
+                 'dropout2': hp.uniform('dropout2', 0.25, 0.75),
                  'embeddings_trainable': False}
         trials = Trials()
         best = fmin(model_to_tweak_uttlabel, space, algo=tpe.suggest, max_evals=args.max_evals, trials=trials)
