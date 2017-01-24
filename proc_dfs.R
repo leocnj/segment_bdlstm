@@ -20,18 +20,20 @@ out.sorted <- out[order(out$sum),]
 # cover score range
 #
 # toal 36 subj.
-#
-# <40     3    1  subj=24
-# 40-50   4    1  subj=18
-# 50-60  12    2  subj=10,17
-# 60-70  17    2  subj=13,31
+# 
+# 1/24, increased dev set from 6 to 6+5
+# <40     3    1  subj=24, 15
+# 40-50   4    1  subj=18, 25
+# 50-60  12    2  subj=10,17, 23
+# 60-70  17    2  subj=13,31, 12, 22
 
 df_sc <- merge(df, score[, c('videoID', 'subj', 'BARS')], by.x='vid', by.y='videoID')
 df_sc <- df_sc[complete.cases(df_sc),] # remove NA row.
 
 # based on the above subj-split plan, divide data
 subj <- unique(score$subj)
-dev <- c('24', '18', '10', '17', '13', '31')
+dev <- c('24', '18', '10', '17', '13', '31',
+         '15', '25', '23', '12', '22')
 train <- setdiff(subj, dev)
 
 df.dev<-subset(df_sc, subj %in% dev, select = vid:BARS)
