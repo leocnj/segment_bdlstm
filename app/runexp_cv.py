@@ -133,11 +133,11 @@ if __name__ == '__main__':
 
     if args.exp_name.lower() == 'cnn':
         space = {'optimizer': 'adadelta',
-                 'batch_size': 64,
-                 'filter_size': 4,
-                 'nb_filter': 100,
-                 'dropout1': 0.6366,
-                 'dropout2': 0.5996,
+                 'batch_size': 6,
+                 'filter_size': 5,
+                 'nb_filter': 75,
+                 'dropout1': 0.2840,
+                 'dropout2': 0.4159,
                  'embeddings_trainable': False}
     elif args.exp_name.lower() == 'uttlabel_cnn':
         space = {'optimizer': 'adadelta',
