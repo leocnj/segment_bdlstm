@@ -141,11 +141,11 @@ if __name__ == '__main__':
                  'embeddings_trainable': False}
     elif args.exp_name.lower() == 'uttlabel_cnn':
         space = {'optimizer': 'adadelta',
-                 'batch_size': 3,
-                 'filter_size': 3,
+                 'batch_size': 64,
+                 'filter_size': 5,
                  'nb_filter': 75,
-                 'dropout1': 0.5,
-                 'dropout2': 0.5,
+                 'dropout1': 0.2790,
+                 'dropout2': 0.4690,
                  'embeddings_trainable': False}
     elif args.exp_name.lower() == 'lstm':
         space = {'optimizer': 'adadelta',
