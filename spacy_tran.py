@@ -31,8 +31,9 @@ for fname in os.listdir(txt_dir):
     if fname.endswith('.txt'):
         vid = fname[:-4] # remove .txt
         with open(txt_dir + fname, 'r') as _txt:
-            lns = _txt.readlines()
-            text = unicode('\n'.join(lns), 'utf-8')
+            lns = [ln.rstrip() for ln in _txt]
+            text = ' '.join(lns)
+            text = unicode(text, 'utf-8')
             doc = nlp(text, parse=True)
             sents_lst = []
             for sent in doc.sents:

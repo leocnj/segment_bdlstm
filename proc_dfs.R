@@ -4,7 +4,7 @@
 library(dplyr)
 library(magrittr)
 
-df <- read.csv('csv/all.tsv', sep = '\t')
+df <- read.csv('csv/sents.tsv', sep = '\t')
 score <- read.csv('csv/hs_out.csv')
 # score$subj <- factor(score$subj)
 
@@ -39,8 +39,8 @@ df.train<-subset(df_sc, subj %in% train, select = vid:BARS)
 
 # now we can save both new dfs for param tweaking
 # later, from df.train will generate 10-fold CV from train (n=30)
-# write.csv(df.dev, file='csv/param_dev.csv', row.names = F)
-# write.csv(df.train, file='csv/param_train.csv', row.names = F)
+write.csv(df.dev, file='csv/param_dev.csv', row.names = F)
+write.csv(df.train, file='csv/param_train.csv', row.names = F)
 ids = unique(df.train$subj)
 
 fold_id <- function(id, df){
