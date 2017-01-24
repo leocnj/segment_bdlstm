@@ -19,9 +19,10 @@ def one_cv_exp(args, params):
 
     :return:
     '''
-    folds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 32, 33, 35, 36, 37,
-             38]
-
+    # folds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 16, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 32, 33, 35, 36, 37,
+    #         38]
+    # 1/24 increased dev from 6 to 11.
+    folds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 14, 16, 20, 21, 26, 27, 28, 29, 30, 32, 33, 35, 36, 37, 38]
     trains = [args.data_dir + 'cv_ta_' + str(fold) for fold in folds]
     tests = [args.data_dir + 'cv_ts_' + str(fold) for fold in folds]
     pairs = zip(trains, tests)
